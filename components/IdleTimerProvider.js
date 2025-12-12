@@ -7,7 +7,7 @@ import { useAuth } from './AuthProvider';
 
 const IdleTimerProvider = ({ children }) => {
     const { logout, user } = useAuth();
-    const inactivityMin = Number(process.env.NEXT_PUBLIC_DEFAULT_IDLE_MINUTES || 1);
+    const inactivityMin = Number(process.env.NEXT_PUBLIC_DEFAULT_IDLE_MINUTES || 10);
     const countdownSec = Number(process.env.NEXT_PUBLIC_COUNTDOWN_SECONDS || 60);
 
     const inactivityMs = inactivityMin * 60 * 1000;
@@ -29,6 +29,15 @@ const IdleTimerProvider = ({ children }) => {
     };
 
     const onInactivityReached = () => {
+        // Check if "Stay Signed In" is enabled
+        const staySignedIn = typeof window !== 'undefined' && localStorage.getItem('staySignedIn') === 'true';
+
+        if (staySignedIn) {
+            // Reset timer and return, do not show modal
+            resetInactivity();
+            return;
+        }
+
         // show modal and start countdown interval
         setShowModal(true);
         let remaining = countdownSec;

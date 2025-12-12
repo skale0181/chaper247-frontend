@@ -2,9 +2,11 @@
 
 import { useAuth } from '@/components/AuthProvider';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const GlobalHeader = () => {
     const { user, logout } = useAuth();
+    console.log("GlobalHeader User:", user);
     const router = useRouter();
 
     const handleLogout = async () => {
@@ -38,7 +40,7 @@ const GlobalHeader = () => {
             </div>
 
             <nav style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <a
+                <Link
                     href="/tasks"
                     style={{
                         textDecoration: 'none',
@@ -47,9 +49,9 @@ const GlobalHeader = () => {
                     }}
                 >
                     Tasks
-                </a>
-                <a
-                    href="/auth/profile"
+                </Link>
+                <Link
+                    href="/profile"
                     style={{
                         textDecoration: 'none',
                         color: '#007bff',
@@ -57,7 +59,7 @@ const GlobalHeader = () => {
                     }}
                 >
                     Profile
-                </a>
+                </Link>
                 <button
                     onClick={handleLogout}
                     style={{

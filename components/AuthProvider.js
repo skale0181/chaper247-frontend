@@ -1,40 +1,66 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { request } from '@/lib/api';
+import { API_ROUTES } from '@/configue/routes';
 
 const AuthCtx = createContext();
 
+
+let privateRoutes = ["/tasks", "/profile"];
+let authRoutes = ["/auth/login", "/auth/signup"];
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    // optionally, fetch /auth/me on mount
-    useEffect(() => {
-        const fetchMe = async () => {
-            try {
-                const res = await request.get('/auth/me');
-                setUser(res.data);
-            } catch (e) {
-                setUser(null);
-            }
-        };
-        fetchMe();
-    }, []);
+    const [loading, setLoading] = useState(true);
+    const router = useRouter();
+    const pathname = usePathname();
 
-    const login = async (username, password) => {
-        const resp = await request.post('/auth/login', { username, password });
-        // resp.data.user contains user info (from dummyjson)
-        setUser(resp.data.user);
-        return resp.data;
+    useEffect(() => {
+        const user = localStorage.getItem("user");
+        if (privateRoutes.includes(pathname) && !user) {
+            router.push("/auth/login");
+        } else if (authRoutes.includes(pathname) && user) {
+            router.push("/tasks");
+        }
+    }, [pathname]);
+
+    const fetchUser = async () => {
+        try {
+            const res = await request.get(API_ROUTES.AUTH.ME);
+            // Check for success status (200-299)
+            if (res && res.status >= 200 && res.status < 300) {
+                setUser(res.data);
+                localStorage.setItem("user", res.data?.user)
+            } else {
+                setUser(null);
+                localStorage.removeItem("user");
+            }
+        } catch (err) {
+            console.error("Error fetching user:", err);
+            setUser(null);
+            localStorage.removeItem("user");
+        } finally {
+            setLoading(false);
+        }
     };
 
+    useEffect(() => {
+        fetchUser();
+    }, []);
+
+
+    // logout function
     const logout = async () => {
-        await request.post('/auth/logout', {});
+        await request.post(API_ROUTES.AUTH.LOGOUT, {});
         setUser(null);
+        localStorage.removeItem("user");
+        router.push("/auth/login");
     };
 
     return (
-        <AuthCtx.Provider value={{ user, login, logout, setUser }}>
-            {children}
+        <AuthCtx.Provider value={{ user, logout, setUser, loading }}>
+            {!loading && children}
         </AuthCtx.Provider>
     );
 };
