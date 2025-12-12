@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
             // Check for success status (200-299)
             if (res && res.status >= 200 && res.status < 300) {
                 setUser(res.data);
-                localStorage.setItem("user", res.data?.user)
+                localStorage.setItem("user", JSON.stringify(res.data));
             } else {
                 setUser(null);
                 localStorage.removeItem("user");

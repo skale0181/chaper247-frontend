@@ -6,7 +6,6 @@ import Link from 'next/link';
 
 const GlobalHeader = () => {
     const { user, logout } = useAuth();
-    console.log("GlobalHeader User:", user);
     const router = useRouter();
 
     const handleLogout = async () => {

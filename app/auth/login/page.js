@@ -31,8 +31,8 @@ export default function LoginPage() {
             const res = await request.post(API_ROUTES.AUTH.LOGIN, form);
             console.log(res);
             if (res.status === 200) {
-                setUser(res.data.user);
-                localStorage.setItem("user", res.data?.user)
+                setUser(res.data);
+                localStorage.setItem("user", JSON.stringify(res.data));
                 router.push("/tasks");
             } else {
                 setError("Invalid username or password");
