@@ -35,11 +35,13 @@ export const AuthProvider = ({ children }) => {
             } else {
                 setUser(null);
                 localStorage.removeItem("user");
+                localStorage.removeItem("staySignedIn")
             }
         } catch (err) {
             console.error("Error fetching user:", err);
             setUser(null);
             localStorage.removeItem("user");
+            localStorage.removeItem("staySignedIn")
         } finally {
             setLoading(false);
         }
@@ -55,6 +57,7 @@ export const AuthProvider = ({ children }) => {
         await request.post(API_ROUTES.AUTH.LOGOUT, {});
         setUser(null);
         localStorage.removeItem("user");
+        localStorage.removeItem("staySignedIn")
         router.push("/auth/login");
     };
 
