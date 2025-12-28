@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import IdleTimerProvider from "@/components/IdleTimerProvider";
 import { PopupProvider } from "@/components/PopupMessage";
+import NetworkWrapper from "@/components/NetworkWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,7 +29,9 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <PopupProvider>
             <IdleTimerProvider>
-              {children}
+              <NetworkWrapper>
+                {children}
+              </NetworkWrapper>
             </IdleTimerProvider>
           </PopupProvider>
         </AuthProvider>
